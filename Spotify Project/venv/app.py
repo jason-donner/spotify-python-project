@@ -6,11 +6,11 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(64)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
-client_id = "017746cf3102498190e0977e02205ed7"
-client_secret = "b7e90f3243aa485bb0bb73bff4beae41"
-redirect_uri = "http://127.0.0.1:5000/callback"
+client_id = os.environ.get("CLIENT_ID")
+client_secret = os.environ.get("CLIENT_SECRET")
+redirect_uri = os.environ.get("REDIRECT_URI")
 scope = "user-top-read playlist-modify-private playlist-modify-public"
 
 cache_handler = FlaskSessionCacheHandler(session)
