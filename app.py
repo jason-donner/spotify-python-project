@@ -33,8 +33,10 @@ def home():
 def callback():
     code = request.args.get('code')
     if code:
-        sp_oauth.get_access_token(code)
+        token_info = sp_oauth.get_access_token(code)
+        cache_handler.save_token_to_cache(token_info)  # ✅ Save it!
     return redirect(url_for('get_top_tracks'))
+
 
 @app.route("/get_top_tracks", methods=["GET", "POST"])
 def get_top_tracks():
