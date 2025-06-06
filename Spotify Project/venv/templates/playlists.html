@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Spotify Playlists</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .playlist {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .playlist img {
+            width: 100px;
+            height: 100px;
+            margin-right: 15px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .playlist-info a {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1DB954;
+            text-decoration: none;
+        }
+        .playlist-info small a {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Top 5 Spotify Playlists</h1>
+    {% for playlist in playlists %}
+        <div class="playlist">
+            {% if playlist.image %}
+                <img src="{{ playlist.image }}" alt="Playlist cover">
+            {% endif %}
+            <div class="playlist-info">
+                <a href="{{ url_for('view_playlist', playlist_id=playlist.id) }}">{{ playlist.name }}</a>
+                <small><a href="{{ playlist.url }}" target="_blank">Open in Spotify</a></small>
+            </div>
+        </div>
+    {% endfor %}
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

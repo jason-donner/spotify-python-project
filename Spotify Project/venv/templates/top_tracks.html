@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Top Tracks</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #121212;
+      color: #fff;
+    }
+    .header-container {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .form-input, .form-select {
+      padding: 0.4rem;
+      margin-right: 0.5rem;
+      border-radius: 4px;
+      border: none;
+      font-size: 1rem;
+    }
+    .create-playlist-button {
+      background-color: #1db954;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .create-playlist-button:hover {
+      background-color: #1ed760;
+    }
+    .tracks-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .track-tile {
+      background-color: #282828;
+      border-radius: 8px;
+      width: 200px;
+      padding: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      text-align: center;
+      position: relative;
+    }
+    .track-tile:hover {
+      background-color: #3a3a3a;
+    }
+    .album-image {
+      width: 100%;
+      border-radius: 4px;
+    }
+    .track-name {
+      font-weight: bold;
+      margin: 0.5rem 0 0.2rem 0;
+    }
+    .artist-name {
+      font-size: 0.9rem;
+      color: #b3b3b3;
+      margin: 0;
+    }
+    .more-info {
+      display: none;
+      background-color: #1e1e1e;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .more-info-btn {
+      margin-top: 0.4rem;
+      background: none;
+      border: none;
+      color: #1db954;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .more-info-btn:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <script>
+    function toggleInfo(index) {
+      const infoBox = document.getElementById('info-' + index);
+      if (infoBox.style.display === 'block') {
+        infoBox.style.display = 'none';
+      } else {
+        infoBox.style.display = 'block';
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="header-container">
+    <h1>Your Top Tracks ({{ time_range.replace('_', ' ').title() }})</h1>
+
+    <form method="get" action="/get_top_tracks" class="time-range-form">
+      <label for="time_range">Time Range:</label>
+      <select name="time_range" id="time_range" class="form-select" onchange="this.form.submit()">
+        <option value="short_term" {% if time_range == 'short_term' %}selected{% endif %}>Last 4 Weeks</option>
+        <option value="medium_term" {% if time_range == 'medium_term' %}selected{% endif %}>Last 6 Months</option>
+        <option value="long_term" {% if time_range == 'long_term' %}selected{% endif %}>All Time</option>
+      </select>
+    </form>
+
+    <form action="/create_playlist" method="post" class="create-playlist-form">
+      <input type="text" name="playlist_name" placeholder="Playlist name" class="form-input" required>
+      <select name="playlist_public" class="form-select">
+        <option value="true">Public</option>
+        <option value="false">Private</option>
+      </select>
+      <input type="hidden" name="time_range" value="{{ time_range }}">
+      <button type="submit" class="create-playlist-button">Create Playlist</button>
+    </form>
+  </div>
+
+  <div class="tracks-container">
+    {% for track in tracks %}
+    <div class="track-tile" onclick="window.open('{{ track.spotify_url }}', '_blank')">
+      {% if track.album_image %}
+      <img src="{{ track.album_image }}" alt="{{ track.name }}" class="album-image" />
+      {% endif %}
+      <p class="track-name">{{ track.name }}</p>
+      <p class="artist-name">{{ track.artist }}</p>
+
+      <button type="button" class="more-info-btn" onclick="event.stopPropagation(); toggleInfo('{{ loop.index0 }}');">More Info</button>
+      <div class="more-info" id="info-{{ loop.index0 }}">
+        <p><strong>Track:</strong> {{ track.name }}</p>
+        <p><strong>Artist:</strong> {{ track.artist }}</p>
+        {% if track.genres %}
+        <p><strong>Genres:</strong> {{ track.genres | join(', ') }}</p>
+        {% endif %}
+        <p><strong>Spotify URL:</strong> <a href="{{ track.spotify_url }}" target="_blank" style="color: #1db954;">Open</a></p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
